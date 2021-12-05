@@ -1,0 +1,10 @@
+(library
+ (name osqp)
+ (public_name osqp)
+ (foreign_stubs
+  (language c)
+  (names osqp_stub)
+  (flags -I/home/mika/opt/osqp/include -fPIC)
+ )
+ (c_library_flags -L/home/mika/opt/lib -losqp)
+)
