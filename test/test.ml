@@ -69,6 +69,7 @@ let raw_test () =
 
 let easy_test () =
   let open Osqp.Easy in
+  let open Osqp.CSC in
   let p = [{ i=0; j=0; x=4.0}; {i=0; j=1; x=1.0}; {i=1; j=1; x=2.0}] in
   let q   = fa [| 1.; 1. |] in
   let a = [{i=0; j=0; x=1.}; {i=0; j=1; x=1.}; {i=1; j=0; x=1.}; {i=2; j=1; x=1.}] in

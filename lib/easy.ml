@@ -1,10 +1,5 @@
 include Raw
-
-type nonzero = {
-  i : int;
-  j : int;
-  x : float
-}
+type nonzero = CSC.nonzero
 
 type t = {
   n : int;
@@ -30,98 +25,6 @@ type t = {
 
 }
 
-let cmp_nz {i = i1; j = j1; _} {i = i2; j = j2; _} =
-  match Int.compare j1 j2 with
-  | 0 -> Int.compare i1 i2
-  | c -> c
-
-let rec prepend ~value ~count list =
-  if count = 0 then
-    list
-  else
-    prepend ~value ~count:(count - 1) (value :: list)
-
-let check_bounds_exn ~m ~n {i; j; _} =
-  if i < 0 || i >= m then
-    failwith "row index out of bounds";
-  if j < 0 || j >= n then
-    failwith "column index out of bounds"
-
-
-let csc ~m ~n =
-  let rec loop check_structure_exn xs is ps prev_nz k = function
-    | ({i; j; x} as nz) :: rest ->
-      (* because nonzeros are sorted *)
-      assert (prev_nz.j <= j);
-
-      check_bounds_exn ~m ~n nz;
-
-      if prev_nz.j = j && prev_nz.i = i then
-        failwith "duplicate nonzeros";
-
-      check_structure_exn nz;
-
-      let xs = x :: xs in
-      let is = i :: is in
-      let ps = prepend ~value:k ~count:(j - prev_nz.j) ps in
-      let k = k + 1 in
-      loop check_structure_exn xs is ps nz k rest
-
-
-    | [] ->
-      let xs = List.rev xs in
-      let is = List.rev is in
-      let ps = List.rev (k :: ps) in
-      assert (List.length xs = List.length is);
-      assert (List.length ps = n + 1);
-      xs, is, ps
-  in
-  fun nonzeros structure ->
-    let nonzeros = List.sort cmp_nz nonzeros in
-    let check_structure_exn =
-      match structure with
-      | `Upper ->
-        fun {i; j; _} ->
-          if i > j then
-            failwith "not upper-triangular"
-      | `Lower ->
-        fun {i; j; _} ->
-          if i < j then
-            failwith "not lower-triangular"
-      | `None ->
-        fun _ -> ()
-    in
-    match nonzeros with
-    | [] -> [], [], [0]
-    | nz :: rest ->
-      check_bounds_exn ~m ~n nz;
-      let xs = [nz.x] in
-      let is = [nz.i] in
-      let ps = [0] in
-      loop check_structure_exn xs is ps nz 1 rest
-
-(*
-let test1 () =
-  let nz = [{i=0; j=0; x=1.}; {i=0; j=1; x=2.}; {i=1; j=0; x=3.}; {i=2; j=1; x=4.}] in
-  let xs, is, ps = csc ~m:3 ~n:2 nz `None in
-  assert ( xs = [1.; 3.; 2.; 4.    ] );
-  assert ( is = [0 ; 1 ; 0 ; 2 ] );
-  assert ( ps = [0 ; 2 ; 4     ] )
-
-let test2 () =
-  let nz = [{i=0; j=0; x=1.}; {i=0; j=3; x=2.}; {i=1; j=0; x=3.}; {i=2; j=3; x=4.}] in
-  let xs, is, ps = csc ~m:3 ~n:4 nz `None in
-  assert ( xs = [1.; 3.; 2.; 4.    ] );
-  assert ( is = [0 ; 1 ; 0 ; 2     ] );
-  assert ( ps = [0 ; 2 ; 2 ; 2 ; 4 ] )
-
-let test3 () =
-  let nz = [{i=0; j=0; x=1.}; {i=0; j=3; x=2.}; {i=1; j=1; x=3.}] in
-  let xs, is, ps = csc ~m:3 ~n:4 nz `Upper in
-  assert ( xs = [1.; 3.; 2.        ] );
-  assert ( is = [0 ; 1 ; 0         ] );
-  assert ( ps = [0 ; 1 ; 2 ; 2 ; 3 ] )
-*)
 
 let f_ba_of_list list =
   let n = List.length list in
@@ -245,8 +148,8 @@ let solve t =
     failwith "length mismtach: lower bound";
   if Bigarray.Array1.dim t.u <> t.m then
     failwith "length mismtach: upper bound";
-  let p_x, p_i, p_p = csc ~m:t.m ~n:t.n t.p `Upper in
-  let a_x, a_i, a_p = csc ~m:t.m ~n:t.n t.a `None in
+  let p_x, p_i, p_p = CSC.create ~m:t.m ~n:t.n t.p `Upper in
+  let a_x, a_i, a_p = CSC.create ~m:t.m ~n:t.n t.a `None in
 
   let settings = default_settings () in
   let p_x = f_ba_of_list p_x in

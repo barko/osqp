@@ -1,15 +1,9 @@
-type nonzero = {
-  i : int;
-  j : int;
-  x : float
-}
-
 type t = {
   n : int;
   m : int;
   q : Raw.fv;
-  p : nonzero list;
-  a : nonzero list;
+  p : CSC.nonzero list;
+  a : CSC.nonzero list;
   l : Raw.fv;
   u : Raw.fv;
 }

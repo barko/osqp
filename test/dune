@@ -1,1 +1,1 @@
-(executable (name test) (libraries osqp))
+(executables (names test csc) (libraries osqp))
