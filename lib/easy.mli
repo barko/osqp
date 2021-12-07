@@ -65,4 +65,4 @@ type solve_error =
 
 val string_of_solve_error : solve_error -> string
 
-val solve : t -> (Raw.fv * Raw.fv, solve_error) result
+val solve : ?config:settings -> t -> (Raw.fv * Raw.fv, solve_error) result

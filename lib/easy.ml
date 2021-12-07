@@ -139,7 +139,7 @@ let solve t =
   | 7 -> Error WORKSPACE_NOT_INIT
   | _ -> assert false
 
-let solve t =
+let solve ?config t =
   if t.n < 1 then
     failwith "number of variables must be positive";
   if t.m < 0 then
@@ -151,7 +151,11 @@ let solve t =
   let p_x, p_i, p_p = CSC.create ~m:t.m ~n:t.n t.p `Upper in
   let a_x, a_i, a_p = CSC.create ~m:t.m ~n:t.n t.a `None in
 
-  let settings = default_settings () in
+  let settings =
+    match config with
+    | Some c -> c
+    | None -> default_settings ()
+  in
   let p_x = f_ba_of_list p_x in
   let p_i = i_ba_of_list p_i in
   let p_p = i_ba_of_list p_p in

@@ -79,7 +79,8 @@ let easy_test () =
   let m   = 3 in
   let t = { m; n; p; q; a; l; u; } in
   let res = solve t in
-  pr_result res
+  (* pr_result res *)
+  ignore res
 
 
 let _ =
