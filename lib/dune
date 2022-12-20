@@ -4,7 +4,7 @@
  (foreign_stubs
   (language c)
   (names osqp_stub)
-  (flags -I/home/mika/opt/osqp/include -fPIC)
+  (include_dirs "%{env:OSQP_ROOT=/path/to/osqp}/include")
  )
- (c_library_flags -L/home/mika/opt/lib -losqp)
+ (c_library_flags -L%{env:OSQP_ROOT=/path/to/osqp}/build/out -losqp)
 )
