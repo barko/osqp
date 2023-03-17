@@ -17,7 +17,7 @@ let pr_ia a =
 
 let pr_result = function
   | Ok (x, y) ->
-    Printf.printf "ok\nx=\n";
+    Printf.printf "x=\n";
     pr_fa x;
     Printf.printf "y=\n";
     pr_fa y
@@ -93,7 +93,9 @@ let easy_test () =
   let n = 2 in
   let m = 3 in
   let t = { m; n; p; q; a; l; u } in
-  let res = solve t in
+  let config = default_settings () in
+  let () = set_verbose config false in
+  let res = solve ~config t in
   pr_result res
 
 let () = easy_test ()

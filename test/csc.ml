@@ -12,7 +12,8 @@ let test1 () =
   let { xis; ps; num_nz } = create ~m:3 ~n:2 nz Plain in
   assert (num_nz = 4);
   assert (xis = [ (1., 0); (3., 1); (2., 0); (4., 2) ]);
-  assert (ps = [ 0; 2; 4 ])
+  assert (ps = [ 0; 2; 4 ]);
+  print_endline "ok"
 
 let test2 () =
   let nz =
@@ -26,7 +27,8 @@ let test2 () =
   let { xis; ps; num_nz } = create ~m:3 ~n:4 nz Plain in
   assert (num_nz = 4);
   assert (xis = [ (1., 0); (3., 1); (2., 0); (4., 2) ]);
-  assert (ps = [ 0; 2; 2; 2; 4 ])
+  assert (ps = [ 0; 2; 2; 2; 4 ]);
+  print_endline "ok"
 
 let test3 () =
   let nz =
@@ -39,7 +41,8 @@ let test3 () =
   let { xis; ps; num_nz } = create ~m:3 ~n:4 nz Upper in
   assert (num_nz = 3);
   assert (xis = [ (1., 0); (3., 1); (2., 0) ]);
-  assert (ps = [ 0; 1; 2; 2; 3 ])
+  assert (ps = [ 0; 1; 2; 2; 3 ]);
+  print_endline "ok"
 
 let _ =
   test1 ();
