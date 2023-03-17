@@ -22,7 +22,7 @@ let pr_result = function
     pr_fa y
 
   | Error e ->
-    Printf.printf "result=%s\n" (Osqp.Easy.string_of_solve_error e)
+    Printf.printf "error=%s\n" (Osqp.Easy.string_of_solve_error e)
 
 let raw_test () =
   let p_x = fa [| 4.0; 1.0; 2.0 |] in
@@ -79,8 +79,7 @@ let easy_test () =
   let m   = 3 in
   let t = { m; n; p; q; a; l; u; } in
   let res = solve t in
-  (* pr_result res *)
-  ignore res
+  pr_result res
 
 
 let _ =

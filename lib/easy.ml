@@ -26,14 +26,15 @@ type t = {
 }
 
 
-let f_ba_of_list list =
-  let n = List.length list in
-  let a = Bigarray.(Array1.create float64 c_layout n) in
+let fi_ba_of_list num_nz elements =
+  let float_a = Bigarray.(Array1.create float64 c_layout num_nz) in
+  let int_a = Bigarray.(Array1.create int c_layout num_nz) in
   List.iteri (
-    fun i x ->
-      a.{i} <- x
-  ) list;
-  a
+    fun j (x, i) ->
+      float_a.{j} <- x;
+      int_a.{j} <- i
+  ) elements;
+  float_a, int_a
 
 let i_ba_of_list list =
   let n = List.length list in
@@ -148,20 +149,18 @@ let solve ?config t =
     failwith "length mismtach: lower bound";
   if Bigarray.Array1.dim t.u <> t.m then
     failwith "length mismtach: upper bound";
-  let p_x, p_i, p_p = CSC.create ~m:t.m ~n:t.n t.p `Upper in
-  let a_x, a_i, a_p = CSC.create ~m:t.m ~n:t.n t.a `None in
+  let { CSC.xis = p_xis; ps = p_ps; num_nz = p_num_nz } = CSC.create ~m:t.m ~n:t.n t.p Upper in
+  let { CSC.xis = a_xis; ps = a_ps; num_nz = a_num_nz } = CSC.create ~m:t.m ~n:t.n t.a Plain in
 
   let settings =
     match config with
     | Some c -> c
     | None -> default_settings ()
   in
-  let p_x = f_ba_of_list p_x in
-  let p_i = i_ba_of_list p_i in
-  let p_p = i_ba_of_list p_p in
-  let a_x = f_ba_of_list a_x in
-  let a_i = i_ba_of_list a_i in
-  let a_p = i_ba_of_list a_p in
+  let p_x, p_i = fi_ba_of_list p_num_nz p_xis in
+  let a_x, a_i = fi_ba_of_list a_num_nz a_xis in
+  let p_p = i_ba_of_list p_ps in
+  let a_p = i_ba_of_list a_ps in 
 
   match create settings p_x p_i p_p t.q a_x a_i a_p t.l t.u t.n t.m with
   | None -> failwith "create failed"
