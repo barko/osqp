@@ -29,12 +29,10 @@ let is_small x = -.eps <= x && x <= eps
 
 type structure =
   | Plain
-  | Upper
-  (** lower triangular *)
-  | Lower
-  (** upper triangular *)
+  | Upper  (** lower triangular *)
+  | Lower  (** upper triangular *)
 
-let create ~m ~n ?(col1=true) =
+let create ~m ~n ?(col1 = true) =
   let rec loop check_structure xis ps prev_nz k = function
     | ({ i; j; x } as nz) :: rest ->
       (* because nonzeros are sorted *)
@@ -51,7 +49,8 @@ let create ~m ~n ?(col1=true) =
          previous column. *)
       let ps = prepend ~value:k ~count:(j - prev_nz.j) ps in
 
-      if is_small x then (* x is near zero; skip *)
+      if is_small x then
+        (* x is near zero; skip *)
         loop check_structure xis ps nz k rest
       else
         let xis = (x, i) :: xis in
@@ -66,17 +65,14 @@ let create ~m ~n ?(col1=true) =
       let ps =
         let ps =
           (* length of ps is one more than the number of columns *)
-          if col1 then
-            k :: ps
-          else
-            ps
-        in 
+          if col1 then k :: ps else ps
+        in
         List.rev ps
-      in 
+      in
       assert (
         let len_xis = List.length xis in
         let len_ps = List.length ps in
-        len_ps = n + (if col1 then 1 else 0) && len_xis = k);
+        (len_ps = n + if col1 then 1 else 0) && len_xis = k);
       { xis; ps; num_nz = k }
   in
 
@@ -94,15 +90,10 @@ let create ~m ~n ?(col1=true) =
     let check_structure_exn =
       match structure with
       | Upper ->
-        fun {i; j; _} ->
-          if i > j then
-            failwith "not upper-triangular"
+        fun { i; j; _ } -> if i > j then failwith "not upper-triangular"
       | Lower ->
-        fun {i; j; _} ->
-          if i < j then
-            failwith "not lower-triangular"
-      | Plain ->
-        fun _ -> ()
+        fun { i; j; _ } -> if i < j then failwith "not lower-triangular"
+      | Plain -> fun _ -> ()
     in
 
     let nonzeros = List.sort cmp_nz nonzeros in

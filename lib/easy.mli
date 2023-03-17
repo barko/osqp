@@ -1,11 +1,12 @@
 type t = {
-  n : int;
-  m : int;
-  q : Raw.fv;
+  n : int;  (** number of variables *)
+  m : int;  (** number of constraints *)
+  q : Raw.fv;  (** n-length vector; linear term *)
   p : CSC.nonzero list;
-  a : CSC.nonzero list;
-  l : Raw.fv;
-  u : Raw.fv;
+      (** n x n postive symmetric semidefinite matrix; sparse quadratic term *)
+  a : CSC.nonzero list;  (** m x n linear constraint matrix *)
+  l : Raw.fv;  (** m-length vector; lower bound on linear constraints *)
+  u : Raw.fv;  (** m-length vector; upper bound on linear constraints *)
 }
 
 type settings
@@ -66,3 +67,5 @@ type solve_error =
 val string_of_solve_error : solve_error -> string
 
 val solve : ?config:settings -> t -> (Raw.fv * Raw.fv, solve_error) result
+(** solve the optimization problem, returning the primal and dual
+    variables on success, or an error on failure *)
